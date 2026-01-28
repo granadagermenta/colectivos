@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bondis I.Guazú</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; padding: 15px; color: #1c1e21; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #0078d4; margin-bottom: 20px; font-size: 1.5rem; }
+        
+        /* Card Styles */
+        .control-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: #fff; margin-bottom: 15px; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; }
+        
+        .btn { width: 100%; padding: 14px; background: #0078d4; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .btn:active { background: #005a9e; transform: scale(0.98); }
+
+        /* Result Styles */
+        .result-group { margin-bottom: 20px; }
+        .line-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #333; display: flex; align-items: center; justify-content: space-between; }
+        .line-tag { font-size: 0.75rem; background: #eee; padding: 2px 6px; border-radius: 4px; color: #666; font-weight: normal; }
+        
+        .result-card { background: white; padding: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; }
+        .result-card.urgent { border-left-color: #e74c3c; } /* Rojo si falta poco */
+        .result-card.normal { border-left-color: #2ecc71; } /* Verde si hay tiempo */
+        
+        .time-row { display: flex; justify-content: space-between; align-items: baseline; }
+        .main-time { font-size: 1.4rem; font-weight: 800; color: #222; }
+        .countdown { font-weight: bold; font-size: 0.95rem; }
+        .countdown.red { color: #e74c3c; }
+        .countdown.green { color: #27ae60; }
+        
+        .advice-text { margin-top: 8px; font-size: 0.85rem; color: #555; background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px dashed #ccc; }
+        .via-quaranta { font-size: 0.8rem; color: #d35400; font-weight: bold; margin-left: 5px; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>🚍 Bondis I.Guazú</h1>
+
+    <div class="control-panel">
+        <label for="ubicacion">📍 ¿Dónde estás?</label>
+        <select id="ubicacion">
+            <option value="casa">Casa / Itaembé Guazú</option>
+            <option value="villa_cabello">Villa Cabello</option>
+            <option value="mitre">Calle Mitre</option>
+            <option value="roque_perez">Av. Roque Pérez</option>
+            <option value="quaranta">Terminal Quaranta</option>
+        </select>
+
+        <label for="destino">🏁 ¿A dónde vas?</label>
+        <select id="destino">
+            <option value="centro">Al Centro</option>
+            <option value="barrio">A Itaembé Guazú (Casa)</option>
+            <option value="quaranta">A Quaranta</option>
+        </select>
+        
+        <button class="btn" onclick="buscar()">Ver Horarios</button>
+    </div>
+
+    <div id="resultados"></div>
+
+    <script>
+        let datos = {};
+
+        // Cargar JSON al iniciar
+        window.onload = async function() {
+            try {
+                const response = await fetch('horarios.json');
+                datos = await response.json();
+            } catch (error) {
+                document.getElementById('resultados').innerHTML = '<p style="text-align:center; color:red;">Error cargando horarios.json</p>';
+            }
+        };
+
+        function detectarDia() {
+            const hoy = new Date();
+            const diaSemana = hoy.getDay(); // 0 Dom, 6 Sab
+            if (diaSemana === 0) return 'domingos';
+            if (diaSemana === 6) return 'sabados'; 
+            return 'habiles';
+        }
+
+        function buscar() {
+            const ubicacion = document.getElementById('ubicacion').value;
+            const destino = document.getElementById('destino').value;
+            const container = document.getElementById('resultados');
+            container.innerHTML = '';
+
+            // Reglas de exclusión
+            if ((ubicacion === 'casa' && destino === 'barrio') || 
+                (ubicacion === 'mitre' && destino === 'centro') || 
+                (ubicacion === 'roque_perez' && destino === 'centro') ||
+                (ubicacion === 'quaranta' && destino === 'quaranta')) {
+                container.innerHTML = '<p style="text-align:center;">Ese viaje no tiene sentido (Estás en el destino).</p>';
+                return;
+            }
+
+            const diaTipo = detectarDia();
+            const ahora = new Date();
+            let opcionesEncontradas = 0;
+
+            datos.lineas.forEach(linea => {
+                linea.recorridos.forEach(rec => {
+                    
+                    // 1. FILTRO DE DESTINO Y UBICACIÓN
+                    let mostrar = false;
+                    let esViaQuaranta = false;
+
+                    if (destino === 'centro') {
+                        if (rec.destino === 'centro') mostrar = true;
+                        if (rec.destino === 'quaranta' && ubicacion === 'casa') {
+                            mostrar = true;
+                            esViaQuaranta = true;
+                        }
+                    } else {
+                        if (rec.destino === destino) mostrar = true;
+                    }
+
+                    if (mostrar && rec.offsets[ubicacion] === undefined) {
+                        mostrar = false;
+                    }
+
+                    if (!mostrar) return;
+
+                    // 2. OBTENER HORARIOS
+                    let listaHorarios = [];
+                    
+                    // Caso especial: 110 Bomberos (tiene horarios distintos para Domingo)
+                    if (linea.id.includes('110_bomberos')) {
+                        if (diaTipo === 'domingos') listaHorarios = rec.dias.domingos || [];
+                        else listaHorarios = rec.dias.habiles_sabado || [];
+                    } 
+                    // Todos los demás (incluido ahora el 110 - 508 Viviendas)
+                    else {
+                        if (rec.dias[diaTipo]) listaHorarios = rec.dias[diaTipo]; // Busca horario específico del día (ej: Sabado)
+                        else if (rec.dias['todos']) listaHorarios = rec.dias['todos']; // Si no, usa el de "todos"
+                        else if (diaTipo === 'sabados' && rec.dias['sabados']) listaHorarios = rec.dias['sabados'];
+                        else if (rec.dias['habiles']) listaHorarios = rec.dias['habiles'];
+                    }
+
+                    if (!listaHorarios || listaHorarios.length === 0) return;
+
+                    // 3. PROCESAR HORARIOS
+                    const offset = rec.offsets[ubicacion];
+                    
+                    const proximos = listaHorarios.map(h => {
+                        const [hh, mm] = h.split(':').map(Number);
+                        const fechaSalida = new Date();
+                        fechaSalida.setHours(hh, mm, 0);
+                        
+                        const fechaPaso = new Date(fechaSalida.getTime() + offset * 60000);
+                        const diffMin = (fechaPaso - ahora) / 60000;
+
+                        return {
+                            salidaCabecera: h,
+                            horaPaso: fechaPaso,
+                            minutos: Math.round(diffMin),
+                            rawDiff: diffMin
+                        };
+                    }).filter(item => item.rawDiff > -10 && item.rawDiff < 120); 
+
+                    if (proximos.length > 0) {
+                        opcionesEncontradas++;
+                        renderizarLinea(container, linea, rec, proximos, ubicacion, esViaQuaranta);
+                    }
+                });
+            });
+
+            if (opcionesEncontradas === 0) {
+                container.innerHTML = '<p style="text-align:center;">No hay colectivos próximos en las siguientes 2 horas.</p>';
+            }
+        }
+
+        function renderizarLinea(container, linea, rec, horarios, ubicacion, esViaQuaranta) {
+            const divGrupo = document.createElement('div');
+            divGrupo.className = 'result-group';
+            
+            let titulo = `${linea.nombre}`;
+            if (esViaQuaranta) titulo += ' <span class="via-quaranta">(Combinación en Quaranta)</span>';
+            
+            divGrupo.innerHTML = `<div class="line-header">${titulo}</div>`;
+
+            // Detectar si el horario es estimado (offset distinto de 0)
+            const offset = rec.offsets[ubicacion];
+            const esEstimado = offset !== 0;
+            const prefixHtml = esEstimado ? '<span style="font-size: 0.5em; text-transform:uppercase; color: #888; display:block; line-height:1;">Aprox</span>' : '';
+
+            horarios.forEach(h => {
+                const esUrgente = h.minutos <= 15 && h.minutos >= -5;
+                const claseColor = esUrgente ? 'urgent' : 'normal';
+                const textoCuenta = h.minutos < 0 ? `Pasó hace ${Math.abs(h.minutos)} min` : `En ${h.minutos} min`;
+                const colorCuenta = h.minutos < 10 ? 'red' : 'green';
+                const horaStr = h.horaPaso.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Consejos
+                let consejo = "";
+                if (ubicacion === 'casa') {
+                    if (linea.id === '300_salud' && !esViaQuaranta) {
+                        if (h.minutos <= 10 && h.minutos > -5) {
+                            // Si falta poco, ya no llegás al Puma
+                            consejo = "Tomar en Av. Horneros (o Crisantemos si no llegás).";
+                        } else if (h.minutos > 10) {
+                            // Si hay tiempo, intentá el Puma, sino andá bajando
+                            consejo = "Podés tomarlo en Av. El Puma. Si no llegás: Horneros o Crisantemos.";
+                        }
+                    } 
+                    else if (linea.id === '300_civico' && !esViaQuaranta) {
+                        if (h.minutos <= 20) {
+                            consejo = "Tomar en el Puente.";
+                        } else {
+                            consejo = "Podés tomarlo en Av. El Puma.";
+                        }
+                    }
+                    else if (linea.id === '304' && rec.destino === 'centro') {
+                         consejo = "Tomar en el Puente (aprox 7-10 min post salida).";
+                    }
+                    else if (linea.id.includes('110') && ubicacion === 'casa') {
+                        if (linea.id === '110_hipodromo') consejo = "Tomar en Av. Horneros.";
+                        if (linea.id === '110_bomberos') consejo = "Tomar en Av. Horneros.";
+                        if (linea.id === '110_sector9') consejo = "Tomar en el Puente.";
+                        if (linea.id === '110_508') consejo = "Tomar en Av. Crisantemos.";
+                    }
+                }
+
+                let htmlConsejo = consejo ? `<div class="advice-text">💡 ${consejo}</div>` : '';
+
+                divGrupo.innerHTML += `
+                    <div class="result-card ${claseColor}">
+                        <div class="time-row">
+                            <div style="display:flex; align-items:center;">
+                                <span class="main-time" style="line-height:1;">
+                                    ${prefixHtml}
+                                    ${horaStr}
+                                </span>
+                            </div>
+                            <span class="countdown ${colorCuenta}">${textoCuenta}</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color:#777; margin-top:4px;">Sale de cabecera: ${h.salidaCabecera}</div>
+                        ${htmlConsejo}
+                    </div>
+                `;
+            });
+
+            container.appendChild(divGrupo);
+        }
+    </script>
+</body>
+</html>

@@ -5,36 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bondis I.Guazú</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; padding: 15px; color: #1c1e21; max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: #0078d4; margin-bottom: 20px; font-size: 1.5rem; }
+        /* Modo Oscuro por defecto */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #23272a; padding: 15px; color: #dcddde; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #5865F2; margin-bottom: 20px; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Card Styles */
-        .control-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 0.9rem; }
-        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: #fff; margin-bottom: 15px; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; }
+        .control-panel { background: #2c2f33; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #b9bbbe; font-size: 0.9rem; }
         
-        .btn { width: 100%; padding: 14px; background: #0078d4; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .btn:active { background: #005a9e; transform: scale(0.98); }
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #202225; font-size: 16px; background: #40444b; color: #fff; margin-bottom: 15px; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23b9bbbe%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; outline: none; }
+        select:focus { border-color: #5865F2; }
+        
+        .btn { width: 100%; padding: 14px; background: #5865F2; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-bottom: 15px; }
+        .btn:active { background: #4752C4; transform: scale(0.98); }
 
-        /* Result Styles */
-        .result-group { margin-bottom: 20px; }
-        .line-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #333; display: flex; align-items: center; justify-content: space-between; }
-        .line-tag { font-size: 0.75rem; background: #eee; padding: 2px 6px; border-radius: 4px; color: #666; font-weight: normal; }
+        .btn-group { display: flex; gap: 10px; }
         
-        .result-card { background: white; padding: 15px; border-radius: 10px; border-left: 5px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; }
-        .result-card.urgent { border-left-color: #e74c3c; } /* Rojo si falta poco */
-        .result-card.normal { border-left-color: #2ecc71; } /* Verde si hay tiempo */
+        .btn-feriado { flex: 2; padding: 12px; background: #ed4245; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-feriado.activo { background: #3ba55d; }
+        
+        .btn-guia { flex: 1; padding: 12px; background: #4f545c; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-guia:active { background: #7289da; }
+
+        .result-group { margin-bottom: 20px; }
+        .line-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #fff; display: flex; align-items: center; justify-content: space-between; padding-bottom: 5px; border-bottom: 1px solid #40444b;}
+        
+        .result-card { background: #2c2f33; padding: 15px; border-radius: 10px; border-left: 5px solid #40444b; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 10px; }
+        .result-card.urgent { border-left-color: #ed4245; } 
+        .result-card.normal { border-left-color: #3ba55d; } 
         
         .time-row { display: flex; justify-content: space-between; align-items: baseline; }
-        .main-time { font-size: 1.4rem; font-weight: 800; color: #222; }
+        .main-time { font-size: 1.4rem; font-weight: 800; color: #fff; }
         .countdown { font-weight: bold; font-size: 0.95rem; }
-        .countdown.red { color: #e74c3c; }
-        .countdown.green { color: #27ae60; }
+        .countdown.red { color: #ff7b7b; }
+        .countdown.green { color: #57F287; }
         
-        .advice-text { margin-top: 8px; font-size: 0.85rem; color: #555; background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px dashed #ccc; }
-        .via-quaranta { font-size: 0.8rem; color: #d35400; font-weight: bold; margin-left: 5px; }
-
-        .hidden { display: none; }
+        .advice-text { margin-top: 8px; font-size: 0.85rem; color: #b9bbbe; background: #23272a; padding: 8px; border-radius: 6px; border: 1px dashed #40444b; }
+        .via-quaranta { font-size: 0.8rem; color: #faa61a; font-weight: bold; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -44,9 +50,9 @@
     <div class="control-panel">
         <label for="ubicacion">📍 ¿Dónde estás?</label>
         <select id="ubicacion">
-            <option value="casa">Casa / Itaembé Guazú</option>
-            <option value="villa_cabello">Villa Cabello</option>
-            <option value="mitre">Calle Mitre</option>
+            <option value="itaembe_guazu">Itaembé Guazú</option>
+            <option value="villa_cabello">Villa Cabello / Av. Blas Parera</option>
+            <option value="mitre">Av. Mitre</option>
             <option value="roque_perez">Av. Roque Pérez</option>
             <option value="quaranta">Terminal Quaranta</option>
         </select>
@@ -54,65 +60,88 @@
         <label for="destino">🏁 ¿A dónde vas?</label>
         <select id="destino">
             <option value="centro">Al Centro</option>
-            <option value="barrio">A Itaembé Guazú (Casa)</option>
+            <option value="barrio">A Itaembé Guazú</option>
             <option value="quaranta">A Quaranta</option>
         </select>
         
         <button class="btn" onclick="buscar()">Ver Horarios</button>
+        
+        <div class="btn-group">
+            <button id="btnFeriado" class="btn-feriado" onclick="toggleFeriado()">¿Hoy es feriado?</button>
+            <button class="btn-guia" onclick="window.location.href='guia.html'">Guía</button>
+        </div>
     </div>
 
     <div id="resultados"></div>
 
     <script>
         let datos = {};
+        let esFeriado = false;
 
-        // Cargar JSON al iniciar
         window.onload = async function() {
             try {
                 const response = await fetch('horarios.json');
                 datos = await response.json();
             } catch (error) {
-                document.getElementById('resultados').innerHTML = '<p style="text-align:center; color:red;">Error cargando horarios.json</p>';
+                document.getElementById('resultados').innerHTML = '<p style="text-align:center; color:#ed4245;">Error cargando horarios.json</p>';
             }
         };
 
+        function toggleFeriado() {
+            esFeriado = !esFeriado;
+            const btn = document.getElementById('btnFeriado');
+            if (esFeriado) {
+                btn.classList.add('activo');
+                btn.innerText = "¡Es feriado! (Activado)";
+            } else {
+                btn.classList.remove('activo');
+                btn.innerText = "¿Hoy es feriado?";
+            }
+            buscar(); // Recarga los resultados automáticamente si ya habías buscado
+        }
+
         function detectarDia() {
+            if (esFeriado) return 'domingos';
             const hoy = new Date();
-            const diaSemana = hoy.getDay(); // 0 Dom, 6 Sab
+            const diaSemana = hoy.getDay();
             if (diaSemana === 0) return 'domingos';
             if (diaSemana === 6) return 'sabados'; 
             return 'habiles';
         }
 
         function buscar() {
+            if (!datos.lineas) return; // Por si aprietan antes de que cargue el JSON
+            
             const ubicacion = document.getElementById('ubicacion').value;
             const destino = document.getElementById('destino').value;
             const container = document.getElementById('resultados');
             container.innerHTML = '';
 
-            // Reglas de exclusión
-            if ((ubicacion === 'casa' && destino === 'barrio') || 
+            // Reglas de exclusión lógicas
+            if ((ubicacion === 'itaembe_guazu' && destino === 'barrio') || 
                 (ubicacion === 'mitre' && destino === 'centro') || 
                 (ubicacion === 'roque_perez' && destino === 'centro') ||
                 (ubicacion === 'quaranta' && destino === 'quaranta')) {
-                container.innerHTML = '<p style="text-align:center;">Ese viaje no tiene sentido (Estás en el destino).</p>';
+                container.innerHTML = '<p style="text-align:center; color:#b9bbbe;">Ese viaje no tiene sentido (Estás en el destino).</p>';
                 return;
             }
 
             const diaTipo = detectarDia();
             const ahora = new Date();
+            const horaActual = ahora.getHours();
+            
+            // Lógica de visión extendida a la noche
+            const limiteMinutos = (horaActual >= 22 || horaActual < 4) ? 180 : 120;
             let opcionesEncontradas = 0;
 
             datos.lineas.forEach(linea => {
                 linea.recorridos.forEach(rec => {
-                    
-                    // 1. FILTRO DE DESTINO Y UBICACIÓN
                     let mostrar = false;
                     let esViaQuaranta = false;
 
                     if (destino === 'centro') {
                         if (rec.destino === 'centro') mostrar = true;
-                        if (rec.destino === 'quaranta' && ubicacion === 'casa') {
+                        if (rec.destino === 'quaranta' && ubicacion === 'itaembe_guazu') {
                             mostrar = true;
                             esViaQuaranta = true;
                         }
@@ -126,34 +155,35 @@
 
                     if (!mostrar) return;
 
-                    // 2. OBTENER HORARIOS
+                    // Extracción de datos simplificada gracias al nuevo JSON
                     let listaHorarios = [];
-                    
-                    // Caso especial: 110 Bomberos (tiene horarios distintos para Domingo)
-                    if (linea.id.includes('110_bomberos')) {
-                        if (diaTipo === 'domingos') listaHorarios = rec.dias.domingos || [];
-                        else listaHorarios = rec.dias.habiles_sabado || [];
-                    } 
-                    // Todos los demás (incluido ahora el 110 - 508 Viviendas)
-                    else {
-                        if (rec.dias[diaTipo]) listaHorarios = rec.dias[diaTipo]; // Busca horario específico del día (ej: Sabado)
-                        else if (rec.dias['todos']) listaHorarios = rec.dias['todos']; // Si no, usa el de "todos"
-                        else if (diaTipo === 'sabados' && rec.dias['sabados']) listaHorarios = rec.dias['sabados'];
-                        else if (rec.dias['habiles']) listaHorarios = rec.dias['habiles'];
+                    if (rec.dias['todos']) {
+                        listaHorarios = rec.dias['todos'];
+                    } else if (rec.dias[diaTipo]) {
+                        listaHorarios = rec.dias[diaTipo];
                     }
 
-                    if (!listaHorarios || listaHorarios.length === 0) return;
+                    if (listaHorarios.length === 0) return;
 
-                    // 3. PROCESAR HORARIOS
                     const offset = rec.offsets[ubicacion];
                     
                     const proximos = listaHorarios.map(h => {
                         const [hh, mm] = h.split(':').map(Number);
-                        const fechaSalida = new Date();
+                        let fechaSalida = new Date();
                         fechaSalida.setHours(hh, mm, 0);
                         
-                        const fechaPaso = new Date(fechaSalida.getTime() + offset * 60000);
-                        const diffMin = (fechaPaso - ahora) / 60000;
+                        let fechaPaso = new Date(fechaSalida.getTime() + offset * 60000);
+                        let diffMin = (fechaPaso - ahora) / 60000;
+
+                        // Corrección de la media noche (Cruce de día para el Nocturno)
+                        if (diffMin < -720) { 
+                            // Si el cálculo da que pasó hace más de 12 horas, es porque es un horario de mañana a la madrugada
+                            diffMin += 1440;
+                            fechaPaso = new Date(fechaPaso.getTime() + 86400000); // Sumamos 24h
+                        } else if (diffMin > 720) {
+                            // Si dice que falta más de 12 horas, es un remanente del día anterior (ej: bus de 23:00 y son las 01:00)
+                            diffMin -= 1440;
+                        }
 
                         return {
                             salidaCabecera: h,
@@ -161,7 +191,10 @@
                             minutos: Math.round(diffMin),
                             rawDiff: diffMin
                         };
-                    }).filter(item => item.rawDiff > -10 && item.rawDiff < 120); 
+                    }).filter(item => item.rawDiff > -10 && item.rawDiff <= limiteMinutos); 
+
+                    // Ordenar por cercanía de tiempo
+                    proximos.sort((a, b) => a.rawDiff - b.rawDiff);
 
                     if (proximos.length > 0) {
                         opcionesEncontradas++;
@@ -171,7 +204,7 @@
             });
 
             if (opcionesEncontradas === 0) {
-                container.innerHTML = '<p style="text-align:center;">No hay colectivos próximos en las siguientes 2 horas.</p>';
+                container.innerHTML = `<p style="text-align:center; color:#b9bbbe;">No hay colectivos próximos en las siguientes ${limiteMinutos/60} horas.</p>`;
             }
         }
 
@@ -180,14 +213,13 @@
             divGrupo.className = 'result-group';
             
             let titulo = `${linea.nombre}`;
-            if (esViaQuaranta) titulo += ' <span class="via-quaranta">(Combinación en Quaranta)</span>';
+            if (esViaQuaranta) titulo += ' <span class="via-quaranta">(Comb. Quaranta)</span>';
             
             divGrupo.innerHTML = `<div class="line-header">${titulo}</div>`;
 
-            // Detectar si el horario es estimado (offset distinto de 0)
             const offset = rec.offsets[ubicacion];
             const esEstimado = offset !== 0;
-            const prefixHtml = esEstimado ? '<span style="font-size: 0.5em; text-transform:uppercase; color: #888; display:block; line-height:1;">Aprox</span>' : '';
+            const prefixHtml = esEstimado ? '<span style="font-size: 0.5em; text-transform:uppercase; color: #7289da; display:block; line-height:1;">Aprox</span>' : '';
 
             horarios.forEach(h => {
                 const esUrgente = h.minutos <= 15 && h.minutos >= -5;
@@ -198,27 +230,22 @@
 
                 // Consejos
                 let consejo = "";
-                if (ubicacion === 'casa') {
+                if (ubicacion === 'itaembe_guazu') {
                     if (linea.id === '300_salud' && !esViaQuaranta) {
-                        if (h.minutos <= 10 && h.minutos > -5) {
-                            // Si falta poco, ya no llegás al Puma
-                            consejo = "Tomar en Av. Horneros (o Crisantemos si no llegás).";
-                        } else if (h.minutos > 10) {
-                            // Si hay tiempo, intentá el Puma, sino andá bajando
-                            consejo = "Podés tomarlo en Av. El Puma. Si no llegás: Horneros o Crisantemos.";
-                        }
+                        if (h.minutos <= 10 && h.minutos > -5) consejo = "Tomar en Av. Horneros (o Crisantemos si no llegás).";
+                        else if (h.minutos > 10) consejo = "Podés tomarlo en Av. El Puma. Si no llegás: Horneros o Crisantemos.";
                     } 
                     else if (linea.id === '300_civico' && !esViaQuaranta) {
-                        if (h.minutos <= 20) {
-                            consejo = "Tomar en el Puente.";
-                        } else {
-                            consejo = "Podés tomarlo en Av. El Puma.";
-                        }
+                        if (h.minutos <= 20) consejo = "Tomar en el Puente.";
+                        else consejo = "Podés tomarlo en Av. El Puma.";
                     }
                     else if (linea.id === '304' && rec.destino === 'centro') {
                          consejo = "Tomar en el Puente (aprox 7-10 min post salida).";
                     }
-                    else if (linea.id.includes('110') && ubicacion === 'casa') {
+                    else if (linea.id === '304_nocturno') {
+                         consejo = "Tomar en Av. Horneros / Lirios.";
+                    }
+                    else if (linea.id.includes('110')) {
                         if (linea.id === '110_hipodromo') consejo = "Tomar en Av. Horneros.";
                         if (linea.id === '110_bomberos') consejo = "Tomar en Av. Horneros.";
                         if (linea.id === '110_sector9') consejo = "Tomar en el Puente.";
@@ -239,7 +266,7 @@
                             </div>
                             <span class="countdown ${colorCuenta}">${textoCuenta}</span>
                         </div>
-                        <div style="font-size: 0.8rem; color:#777; margin-top:4px;">Sale de cabecera: ${h.salidaCabecera}</div>
+                        <div style="font-size: 0.8rem; color:#72767d; margin-top:4px;">Sale de cabecera: ${h.salidaCabecera}</div>
                         ${htmlConsejo}
                     </div>
                 `;

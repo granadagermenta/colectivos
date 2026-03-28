@@ -64,23 +64,24 @@
         // [PASO_B] = Hora que pasa yendo al barrio | [SALIDA_B] = Hora que sale de cabecera yendo al barrio
         const guias = {
             "itaembe_guazu": {
-                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo pasa a las <b>[PASO_C]</b>, a esa hora se puede tomar en la parada de El Puma. De perderse ahí se puede tomar en la avenida Los Horneros cruzando el arroyo, y si no se llega se puede tomar en Los Crisantemos y Tirica, aproximadamente 10 minutos después de que haya pasado por El Puma. Las paradas de El Puma, Los Horneros y Los Crisantemos están en verde, amarillo y rojo respectivamente.", map: "3" },
-                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar en Av. El Puma 10 minutos antes de eso, sino se puede tomar en Av. Los Lirios 10 minutos después de que salga de cabecera.", map: "6" },
-                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar aproximadamente 10 minutos después en Av Los Lirios.", map: "8" },
-                "304_nocturno": { nombre: "304 - Nocturno", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros a la altura de Los Lirios.", map: "13" },
-                "110_bomberos": { nombre: "110 - Bomberos", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros del lado de la calle opuesto al de los parques.", map: "12" },
-                "110_508": { nombre: "110 - 508 Viviendas", text: "Si pasa a las <b>[PASO_C]</b> entonces se toma en Los Crisantemos.", map: "10" },
-                "110_sector9": { nombre: "110 - Sector 9", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Lirios.", map: "11" }
+                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo pasa a las <b>[PASO_C]</b>, a esa hora se puede tomar en la parada de El Puma. De perderse ahí se puede tomar en la avenida Los Horneros cruzando el arroyo, y si no se llega se puede tomar en Los Crisantemos y Tirica, aproximadamente 10 minutos después de que haya pasado por El Puma. Las paradas de El Puma, Los Horneros y Los Crisantemos están en verde, amarillo y rojo respectivamente.", map: "https://www.google.com/maps/d/u/0/embed?mid=17BsMgWBSj3SRa95KyohgQ6JdvVPv0xo&ehbc=2E312F" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar en Av. El Puma 10 minutos antes de eso, sino se puede tomar en Av. Los Lirios 10 minutos después de que salga de cabecera.", map: "https://www.google.com/maps/d/u/0/embed?mid=1xRZR3hL7aMld7royxd_wlaaSIMcGTcc&ehbc=2E312F" },
+                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar aproximadamente 10 minutos después en Av Los Lirios.", map: "https://www.google.com/maps/d/u/0/embed?mid=1p7C5stQZ3jMzcUCUZ1iDf0wJqj_Zp00&ehbc=2E312F" },
+                "304_nocturno": { nombre: "304 - Nocturno", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros a la altura de Los Lirios.", map: "https://www.google.com/maps/d/u/0/embed?mid=1fdoj3dnh9TJxd-d-vaW8KTnmXY1uMjA&ehbc=2E312F" },
+                "110_bomberos": { nombre: "110 - Bomberos", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros.", map: "https://www.google.com/maps/d/u/0/embed?mid=1OJjnRp3RHscWgR2wpcMbA6UY71edBDs&ehbc=2E312F" },
+                "110_hipodromo": { nombre: "110 - Hipódromo", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros del lado de la calle opuesto al de los parques.", map: "https://www.google.com/maps/d/u/0/embed?mid=1zp3dLbAXRKSxUeTRuOFN92J_2ie9o6c&ehbc=2E312F" },
+                "110_508": { nombre: "110 - 508 Viviendas", text: "Si pasa a las <b>[PASO_C]</b> entonces se toma en Los Crisantemos.", map: "https://www.google.com/maps/d/u/0/embed?mid=1U_j8Q9LPV3bRC_SV6ST_E8nW-XRXADM&ehbc=2E312F" },
+                "110_sector9": { nombre: "110 - Sector 9", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Lirios.", map: "https://www.google.com/maps/d/u/0/embed?mid=1jchf5W75_J9iMlwB-sBdy59pZmDvk7U&ehbc=2E312F" }
             },
             "centro": {
-                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Mitre y Buenos Aires 10 minutos después o en Roque Perez y Buenos Aires 5 minutos después de eso.", map: "4" },
-                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez 8 minutos después de eso y en Mitre 5 minutos después.", map: "7" },
-                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "7" },
-                "304_nocturno": { nombre: "304 - Nocturno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "7" }
+                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Mitre y Buenos Aires 10 minutos después o en Roque Perez y Buenos Aires 5 minutos después de eso.", map: "https://www.google.com/maps/d/u/0/embed?mid=1U4wQ5qqneGPP-5-mpXjH3lNM_0tpC3Q&ehbc=2E312F" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez 8 minutos después de eso y en Mitre 5 minutos después.", map: "https://www.google.com/maps/d/u/0/embed?mid=1pkjy9fx4avRLxW61u5PVBZO-wr4VT_E&ehbc=2E312F" },
+                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "https://www.google.com/maps/d/u/0/embed?mid=1pkjy9fx4avRLxW61u5PVBZO-wr4VT_E&ehbc=2E312F" },
+                "304_nocturno": { nombre: "304 - Nocturno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "https://www.google.com/maps/d/u/0/embed?mid=1pkjy9fx4avRLxW61u5PVBZO-wr4VT_E&ehbc=2E312F" }
             },
             "villa_cabello": {
-                "300_salud": { nombre: "300 - Hospital", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "5" },
-                "300_civico": { nombre: "300 - Centro Cívico", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "5" }
+                "300_salud": { nombre: "300 - Hospital", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "https://www.google.com/maps/d/u/0/embed?mid=1hiJRpVlDCOtX26DHx1E5SloUgfPM5kE&ehbc=2E312F" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "https://www.google.com/maps/d/u/0/embed?mid=1hiJRpVlDCOtX26DHx1E5SloUgfPM5kE&ehbc=2E312F" }
             }
         };
 
@@ -192,7 +193,7 @@
                 .replace(/\[SALIDA_B\]/g, busB.salida);
 
             document.getElementById('guide-text').innerHTML = textoFinal;
-            document.getElementById('guide-map').innerHTML = `<iframe src="http://googleusercontent.com/maps.google.com/${guia.map}" loading="lazy"></iframe>`;
+            document.getElementById('guide-map').innerHTML = `<iframe src="${guia.map}" width="100%" height="350" style="border:none; border-radius: 8px;"></iframe>`;
             
             container.style.display = 'block';
         }

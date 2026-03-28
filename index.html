@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bondis I.Guazú</title>
     <style>
-        /* Modo Oscuro por defecto */
+        /* Modo Oscuro */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #23272a; padding: 15px; color: #dcddde; max-width: 600px; margin: 0 auto; }
         h1 { text-align: center; color: #5865F2; margin-bottom: 20px; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -19,17 +19,23 @@
         .btn:active { background: #4752C4; transform: scale(0.98); }
 
         .btn-group { display: flex; gap: 10px; }
-        
         .btn-feriado { flex: 2; padding: 12px; background: #ed4245; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-feriado.activo { background: #3ba55d; }
-        
-        .btn-guia { flex: 1; padding: 12px; background: #4f545c; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-guia { flex: 1; padding: 12px; background: #4f545c; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; text-decoration: none;}
         .btn-guia:active { background: #7289da; }
 
-        .result-group { margin-bottom: 20px; }
+        /* Panel de Filtros */
+        .filtros-panel { background: #2c2f33; padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 20px; display: none; }
+        .filtros-title { font-size: 0.9rem; font-weight: bold; color: #b9bbbe; margin-bottom: 10px; }
+        .filtros-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .filtro-chip { background: transparent; color: #b9bbbe; padding: 8px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; border: 1px solid #4f545c; user-select: none; transition: all 0.2s ease;}
+        .filtro-chip.active { background: #5865F2; color: white; border-color: #5865F2; }
+
+        /* Resultados */
+        .result-group { margin-bottom: 20px; position: relative; }
         .line-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #fff; display: flex; align-items: center; justify-content: space-between; padding-bottom: 5px; border-bottom: 1px solid #40444b;}
         
-        .result-card { background: #2c2f33; padding: 15px; border-radius: 10px; border-left: 5px solid #40444b; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 10px; }
+        .result-card { background: #2c2f33; padding: 15px; border-radius: 10px; border-left: 5px solid #40444b; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 10px; position: relative; }
         .result-card.urgent { border-left-color: #ed4245; } 
         .result-card.normal { border-left-color: #3ba55d; } 
         
@@ -41,6 +47,10 @@
         
         .advice-text { margin-top: 8px; font-size: 0.85rem; color: #b9bbbe; background: #23272a; padding: 8px; border-radius: 6px; border: 1px dashed #40444b; }
         .via-quaranta { font-size: 0.8rem; color: #faa61a; font-weight: bold; margin-left: 5px; }
+
+        .others-container { display: none; margin-top: -5px; padding-top: 5px; border-top: 1px dashed #40444b; }
+        .btn-expand { background: none; border: none; color: #7289da; cursor: pointer; font-size: 0.85rem; padding: 5px 10px; font-weight: 600; width: 100%; text-align: left; transition: color 0.2s; }
+        .btn-expand:hover { color: #fff; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -68,8 +78,13 @@
         
         <div class="btn-group">
             <button id="btnFeriado" class="btn-feriado" onclick="toggleFeriado()">¿Hoy es feriado?</button>
-            <button class="btn-guia" onclick="window.location.href='guia.html'">Guía</button>
+            <a href="guia.html" class="btn-guia">Guía</a>
         </div>
+    </div>
+
+    <div id="filtros-panel" class="filtros-panel">
+        <div class="filtros-title">👀 Filtrar líneas:</div>
+        <div id="filtros-grid" class="filtros-grid"></div>
     </div>
 
     <div id="resultados"></div>
@@ -97,7 +112,7 @@
                 btn.classList.remove('activo');
                 btn.innerText = "¿Hoy es feriado?";
             }
-            buscar(); // Recarga los resultados automáticamente si ya habías buscado
+            buscar(); 
         }
 
         function detectarDia() {
@@ -110,18 +125,23 @@
         }
 
         function buscar() {
-            if (!datos.lineas) return; // Por si aprietan antes de que cargue el JSON
+            if (!datos.lineas) return; 
             
             const ubicacion = document.getElementById('ubicacion').value;
             const destino = document.getElementById('destino').value;
             const container = document.getElementById('resultados');
+            const filtrosPanel = document.getElementById('filtros-panel');
+            const filtrosGrid = document.getElementById('filtros-grid');
+            
             container.innerHTML = '';
+            filtrosGrid.innerHTML = '';
+            let lineasRenderizadas = {}; 
 
-            // Reglas de exclusión lógicas
             if ((ubicacion === 'itaembe_guazu' && destino === 'barrio') || 
                 (ubicacion === 'mitre' && destino === 'centro') || 
                 (ubicacion === 'roque_perez' && destino === 'centro') ||
                 (ubicacion === 'quaranta' && destino === 'quaranta')) {
+                filtrosPanel.style.display = 'none';
                 container.innerHTML = '<p style="text-align:center; color:#b9bbbe;">Ese viaje no tiene sentido (Estás en el destino).</p>';
                 return;
             }
@@ -130,7 +150,6 @@
             const ahora = new Date();
             const horaActual = ahora.getHours();
             
-            // Lógica de visión extendida a la noche
             const limiteMinutos = (horaActual >= 22 || horaActual < 4) ? 180 : 120;
             let opcionesEncontradas = 0;
 
@@ -155,7 +174,6 @@
 
                     if (!mostrar) return;
 
-                    // Extracción de datos simplificada gracias al nuevo JSON
                     let listaHorarios = [];
                     if (rec.dias['todos']) {
                         listaHorarios = rec.dias['todos'];
@@ -175,13 +193,10 @@
                         let fechaPaso = new Date(fechaSalida.getTime() + offset * 60000);
                         let diffMin = (fechaPaso - ahora) / 60000;
 
-                        // Corrección de la media noche (Cruce de día para el Nocturno)
                         if (diffMin < -720) { 
-                            // Si el cálculo da que pasó hace más de 12 horas, es porque es un horario de mañana a la madrugada
                             diffMin += 1440;
-                            fechaPaso = new Date(fechaPaso.getTime() + 86400000); // Sumamos 24h
+                            fechaPaso = new Date(fechaPaso.getTime() + 86400000); 
                         } else if (diffMin > 720) {
-                            // Si dice que falta más de 12 horas, es un remanente del día anterior (ej: bus de 23:00 y son las 01:00)
                             diffMin -= 1440;
                         }
 
@@ -191,88 +206,139 @@
                             minutos: Math.round(diffMin),
                             rawDiff: diffMin
                         };
-                    }).filter(item => item.rawDiff > -10 && item.rawDiff <= limiteMinutos); 
+                    }).filter(item => item.rawDiff > -5 && item.rawDiff <= limiteMinutos); 
 
-                    // Ordenar por cercanía de tiempo
                     proximos.sort((a, b) => a.rawDiff - b.rawDiff);
 
                     if (proximos.length > 0) {
                         opcionesEncontradas++;
+                        if (!lineasRenderizadas[linea.id]) {
+                            lineasRenderizadas[linea.id] = linea.nombre;
+                        }
                         renderizarLinea(container, linea, rec, proximos, ubicacion, esViaQuaranta);
                     }
                 });
             });
 
-            if (opcionesEncontradas === 0) {
+            if (opcionesEncontradas > 0) {
+                filtrosPanel.style.display = 'block';
+                // Crear los chips
+                Object.keys(lineasRenderizadas).forEach(id => {
+                    const chip = document.createElement('div');
+                    chip.className = 'filtro-chip active';
+                    chip.innerText = lineasRenderizadas[id];
+                    chip.onclick = function() { toggleFiltro(this, id); };
+                    filtrosGrid.appendChild(chip);
+                });
+            } else {
+                filtrosPanel.style.display = 'none';
                 container.innerHTML = `<p style="text-align:center; color:#b9bbbe;">No hay colectivos próximos en las siguientes ${limiteMinutos/60} horas.</p>`;
             }
+        }
+
+        function generarCardHtml(h, linea, ubicacion, esViaQuaranta) {
+            const esUrgente = h.minutos <= 15 && h.minutos >= -5;
+            const claseColor = esUrgente ? 'urgent' : 'normal';
+            const textoCuenta = h.minutos < 0 ? `Pasó hace ${Math.abs(h.minutos)} min` : `En ${h.minutos} min`;
+            const colorCuenta = h.minutos < 10 ? 'red' : 'green';
+            const horaStr = h.horaPaso.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const prefijoHtml = '<span style="font-size: 0.5em; text-transform:uppercase; color: #7289da; display:block; line-height:1;">Aprox</span>';
+
+            let consejo = "";
+            if (ubicacion === 'itaembe_guazu') {
+                if (linea.id === '300_salud' && !esViaQuaranta) {
+                    if (h.minutos <= 10 && h.minutos > -5) consejo = "Tomar en Av. Horneros (o Crisantemos si no llegás).";
+                    else if (h.minutos > 10) consejo = "Podés tomarlo en Av. El Puma. Si no llegás: Horneros o Crisantemos.";
+                } 
+                else if (linea.id === '300_civico' && !esViaQuaranta) {
+                    if (h.minutos <= 20) consejo = "Tomar en el Puente.";
+                    else consejo = "Podés tomarlo en Av. El Puma.";
+                }
+                else if (linea.id === '304' && consejo === "") { consejo = "Tomar en el Puente (aprox 7-10 min post salida)."; }
+                else if (linea.id === '304_nocturno') { consejo = "Tomar en Av. Horneros / Lirios."; }
+                else if (linea.id.includes('110')) {
+                    if (linea.id === '110_hipodromo') consejo = "Tomar en Av. Horneros.";
+                    if (linea.id === '110_bomberos') consejo = "Tomar en Av. Horneros.";
+                    if (linea.id === '110_sector9') consejo = "Tomar en el Puente.";
+                    if (linea.id === '110_508') consejo = "Tomar en Av. Crisantemos.";
+                }
+            }
+            let htmlConsejo = consejo ? `<div class="advice-text">💡 ${consejo}</div>` : '';
+
+            return `
+                <div class="result-card ${claseColor}">
+                    <div class="time-row">
+                        <div style="display:flex; align-items:center;">
+                            <span class="main-time" style="line-height:1;">
+                                ${prefijoHtml}
+                                ${horaStr}
+                            </span>
+                        </div>
+                        <span class="countdown ${colorCuenta}">${textoCuenta}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color:#72767d; margin-top:4px;">Sale de cabecera: ${h.salidaCabecera}</div>
+                    ${htmlConsejo}
+                </div>
+            `;
         }
 
         function renderizarLinea(container, linea, rec, horarios, ubicacion, esViaQuaranta) {
             const divGrupo = document.createElement('div');
             divGrupo.className = 'result-group';
+            divGrupo.setAttribute('data-linea', linea.id); // <-- Clave para que funcione el filtro
             
             let titulo = `${linea.nombre}`;
             if (esViaQuaranta) titulo += ' <span class="via-quaranta">(Comb. Quaranta)</span>';
-            
             divGrupo.innerHTML = `<div class="line-header">${titulo}</div>`;
 
-            const offset = rec.offsets[ubicacion];
-            const esEstimado = offset !== 0;
-            const prefixHtml = esEstimado ? '<span style="font-size: 0.5em; text-transform:uppercase; color: #7289da; display:block; line-height:1;">Aprox</span>' : '';
+            const elPrimero = horarios[0];
+            divGrupo.innerHTML += generarCardHtml(elPrimero, linea, ubicacion, esViaQuaranta);
 
-            horarios.forEach(h => {
-                const esUrgente = h.minutos <= 15 && h.minutos >= -5;
-                const claseColor = esUrgente ? 'urgent' : 'normal';
-                const textoCuenta = h.minutos < 0 ? `Pasó hace ${Math.abs(h.minutos)} min` : `En ${h.minutos} min`;
-                const colorCuenta = h.minutos < 10 ? 'red' : 'green';
-                const horaStr = h.horaPaso.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (horarios.length > 1) {
+                const losOtros = horarios.slice(1);
+                const containerId = `others_${linea.id}_${rec.destino}`;
+                
+                const divOtros = document.createElement('div');
+                divOtros.id = containerId;
+                divOtros.className = 'others-container';
+                
+                losOtros.forEach(h => {
+                    divOtros.innerHTML += generarCardHtml(h, linea, ubicacion, esViaQuaranta);
+                });
+                divGrupo.appendChild(divOtros);
 
-                // Consejos
-                let consejo = "";
-                if (ubicacion === 'itaembe_guazu') {
-                    if (linea.id === '300_salud' && !esViaQuaranta) {
-                        if (h.minutos <= 10 && h.minutos > -5) consejo = "Tomar en Av. Horneros (o Crisantemos si no llegás).";
-                        else if (h.minutos > 10) consejo = "Podés tomarlo en Av. El Puma. Si no llegás: Horneros o Crisantemos.";
-                    } 
-                    else if (linea.id === '300_civico' && !esViaQuaranta) {
-                        if (h.minutos <= 20) consejo = "Tomar en el Puente.";
-                        else consejo = "Podés tomarlo en Av. El Puma.";
-                    }
-                    else if (linea.id === '304' && rec.destino === 'centro') {
-                         consejo = "Tomar en el Puente (aprox 7-10 min post salida).";
-                    }
-                    else if (linea.id === '304_nocturno') {
-                         consejo = "Tomar en Av. Horneros / Lirios.";
-                    }
-                    else if (linea.id.includes('110')) {
-                        if (linea.id === '110_hipodromo') consejo = "Tomar en Av. Horneros.";
-                        if (linea.id === '110_bomberos') consejo = "Tomar en Av. Horneros.";
-                        if (linea.id === '110_sector9') consejo = "Tomar en el Puente.";
-                        if (linea.id === '110_508') consejo = "Tomar en Av. Crisantemos.";
-                    }
-                }
-
-                let htmlConsejo = consejo ? `<div class="advice-text">💡 ${consejo}</div>` : '';
-
-                divGrupo.innerHTML += `
-                    <div class="result-card ${claseColor}">
-                        <div class="time-row">
-                            <div style="display:flex; align-items:center;">
-                                <span class="main-time" style="line-height:1;">
-                                    ${prefixHtml}
-                                    ${horaStr}
-                                </span>
-                            </div>
-                            <span class="countdown ${colorCuenta}">${textoCuenta}</span>
-                        </div>
-                        <div style="font-size: 0.8rem; color:#72767d; margin-top:4px;">Sale de cabecera: ${h.salidaCabecera}</div>
-                        ${htmlConsejo}
-                    </div>
-                `;
-            });
+                const btnExpand = document.createElement('button');
+                btnExpand.className = 'btn-expand';
+                btnExpand.innerText = `+ Ver ${losOtros.length} horarios más...`;
+                btnExpand.onclick = function() { toggleOtros(containerId, this); };
+                divGrupo.appendChild(btnExpand);
+            }
 
             container.appendChild(divGrupo);
+        }
+
+        function toggleOtros(containerId, btn) {
+            const container = document.getElementById(containerId);
+            if (container.style.display === 'block') {
+                container.style.display = 'none';
+                const count = container.querySelectorAll('.result-card').length;
+                btn.innerText = `+ Ver ${count} horarios más...`;
+            } else {
+                container.style.display = 'block';
+                btn.innerText = '- Ver menos';
+            }
+        }
+
+        // Función del filtro
+        function toggleFiltro(chipElement, lineaId) {
+            chipElement.classList.toggle('active');
+            const estaActivo = chipElement.classList.contains('active');
+            
+            // Busca todos los grupos de resultados de esa línea y los oculta/muestra
+            const grupos = document.querySelectorAll(`.result-group[data-linea="${lineaId}"]`);
+            grupos.forEach(g => {
+                g.style.display = estaActivo ? 'block' : 'none';
+            });
         }
     </script>
 </body>

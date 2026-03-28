@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Paradas - Bondis</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #23272a; padding: 15px; color: #dcddde; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #5865F2; margin-bottom: 20px; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 1px; }
+        h2 { color: #fff; font-size: 1.3rem; margin-top: 0; padding-bottom: 8px; border-bottom: 2px solid #5865F2; }
+        
+        .control-panel { background: #2c2f33; padding: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #b9bbbe; font-size: 0.9rem; }
+        
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #202225; font-size: 16px; background: #40444b; color: #fff; margin-bottom: 15px; outline: none; }
+        select:focus { border-color: #5865F2; }
+        
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-volver { flex: 1; padding: 12px; background: #4f545c; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; text-decoration: none;}
+        .btn-volver:active { background: #7289da; }
+        .btn-feriado { flex: 2; padding: 12px; background: #ed4245; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-feriado.activo { background: #3ba55d; }
+
+        .guide-content { background: #2c2f33; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: none; }
+        .guide-text { font-size: 1.05rem; line-height: 1.5; color: #e3e5e8; margin-bottom: 15px; }
+        .guide-text b { color: #57F287; font-size: 1.15rem; background: #23272a; padding: 2px 6px; border-radius: 4px; border: 1px solid #40444b; }
+        .guide-map iframe { width: 100%; height: 350px; border-radius: 8px; border: none; background: #23272a; }
+    </style>
+</head>
+<body>
+
+    <div class="btn-group">
+        <a href="index.html" class="btn-volver">⬅ Volver</a>
+        <button id="btnFeriado" class="btn-feriado" onclick="toggleFeriado()">¿Hoy es feriado?</button>
+    </div>
+
+    <h1>📍 Guía de Paradas</h1>
+
+    <div class="control-panel">
+        <label for="ubicacion">¿Dónde estás?</label>
+        <select id="ubicacion" onchange="actualizarLineas()">
+            <option value="itaembe_guazu">Itaembé Guazú</option>
+            <option value="centro">Centro</option>
+            <option value="villa_cabello">Villa Cabello</option>
+        </select>
+
+        <label for="linea">¿Qué colectivo buscás?</label>
+        <select id="linea" onchange="mostrarGuia()">
+            </select>
+    </div>
+
+    <div id="guide-container" class="guide-content">
+        <h2 id="guide-title">Línea</h2>
+        <div id="guide-text" class="guide-text"></div>
+        <div id="guide-map" class="guide-map"></div>
+    </div>
+
+    <script>
+        let datos = {};
+        let esFeriado = false;
+
+        // Base de datos de textos y mapas.
+        // [PASO_C] = Hora que pasa yendo al centro | [SALIDA_C] = Hora que sale de cabecera yendo al centro
+        // [PASO_B] = Hora que pasa yendo al barrio | [SALIDA_B] = Hora que sale de cabecera yendo al barrio
+        const guias = {
+            "itaembe_guazu": {
+                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo pasa a las <b>[PASO_C]</b>, a esa hora se puede tomar en la parada de El Puma. De perderse ahí se puede tomar en la avenida Los Horneros cruzando el arroyo, y si no se llega se puede tomar en Los Crisantemos y Tirica, aproximadamente 10 minutos después de que haya pasado por El Puma. Las paradas de El Puma, Los Horneros y Los Crisantemos están en verde, amarillo y rojo respectivamente.", map: "3" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar en Av. El Puma 10 minutos antes de eso, sino se puede tomar en Av. Los Lirios 10 minutos después de que salga de cabecera.", map: "6" },
+                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_C]</b> entonces se puede tomar aproximadamente 10 minutos después en Av Los Lirios.", map: "8" },
+                "304_nocturno": { nombre: "304 - Nocturno", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros a la altura de Los Lirios.", map: "13" },
+                "110_bomberos": { nombre: "110 - Bomberos", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Horneros del lado de la calle opuesto al de los parques.", map: "12" },
+                "110_508": { nombre: "110 - 508 Viviendas", text: "Si pasa a las <b>[PASO_C]</b> entonces se toma en Los Crisantemos.", map: "10" },
+                "110_sector9": { nombre: "110 - Sector 9", text: "Si pasa a las <b>[PASO_C]</b> se toma en Los Lirios.", map: "11" }
+            },
+            "centro": {
+                "300_salud": { nombre: "300 - Hospital", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Mitre y Buenos Aires 10 minutos después o en Roque Perez y Buenos Aires 5 minutos después de eso.", map: "4" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez 8 minutos después de eso y en Mitre 5 minutos después.", map: "7" },
+                "304": { nombre: "304 - Diurno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "7" },
+                "304_nocturno": { nombre: "304 - Nocturno", text: "Si el colectivo sale de cabecera a las <b>[SALIDA_B]</b> entonces se puede tomar en Roque Perez en el mismo horario que sale de cabecera, y por Mitre 5 minutos después de que pase por Roque Perez.", map: "7" }
+            },
+            "villa_cabello": {
+                "300_salud": { nombre: "300 - Hospital", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "5" },
+                "300_civico": { nombre: "300 - Centro Cívico", text: "Si se va en dirección al centro, y el colectivo pasa a las <b>[PASO_C]</b> se lo puede tomar sobre Lopez y Planes o sobre Eva Perón.<br><br>Si se va en dirección a Itaembé Guazú y el colectivo pasa a las <b>[PASO_B]</b> se lo puede tomar sobre Tacuarí o sobre Kolping.", map: "5" }
+            }
+        };
+
+        window.onload = async function() {
+            try {
+                const response = await fetch('horarios.json');
+                datos = await response.json();
+                actualizarLineas();
+            } catch (error) {
+                document.getElementById('guide-text').innerHTML = '<span style="color:red;">Error cargando horarios.json</span>';
+                document.getElementById('guide-container').style.display = 'block';
+            }
+        };
+
+        function toggleFeriado() {
+            esFeriado = !esFeriado;
+            const btn = document.getElementById('btnFeriado');
+            if (esFeriado) {
+                btn.classList.add('activo');
+                btn.innerText = "¡Es feriado! (Activado)";
+            } else {
+                btn.classList.remove('activo');
+                btn.innerText = "¿Hoy es feriado?";
+            }
+            mostrarGuia(); // Recalcula los horarios del texto automáticamente
+        }
+
+        function detectarDia() {
+            if (esFeriado) return 'domingos';
+            const hoy = new Date();
+            const diaSemana = hoy.getDay();
+            if (diaSemana === 0) return 'domingos';
+            if (diaSemana === 6) return 'sabados'; 
+            return 'habiles';
+        }
+
+        function actualizarLineas() {
+            const ubi = document.getElementById('ubicacion').value;
+            const selectLinea = document.getElementById('linea');
+            selectLinea.innerHTML = '<option value="" disabled selected>Seleccioná una línea...</option>';
+            
+            if (guias[ubi]) {
+                Object.keys(guias[ubi]).forEach(idLinea => {
+                    let opt = document.createElement('option');
+                    opt.value = idLinea;
+                    opt.innerText = guias[ubi][idLinea].nombre;
+                    selectLinea.appendChild(opt);
+                });
+            }
+            document.getElementById('guide-container').style.display = 'none';
+        }
+
+        // Calcula el próximo colectivo (que no haya pasado hace más de 5 mins)
+        function getNextBus(lineaId, destinoStr, ubicacionStr) {
+            if (!datos.lineas) return { salida: '--:--', paso: '--:--' };
+            const linea = datos.lineas.find(l => l.id === lineaId);
+            if (!linea) return { salida: '--:--', paso: '--:--' };
+            
+            const rec = linea.recorridos.find(r => r.destino === destinoStr);
+            if (!rec) return { salida: '--:--', paso: '--:--' };
+            
+            let offset = rec.offsets[ubicacionStr] !== undefined ? rec.offsets[ubicacionStr] : 0;
+            const diaTipo = detectarDia();
+            let listaHorarios = rec.dias['todos'] || rec.dias[diaTipo] || [];
+            
+            const ahora = new Date();
+            let proximos = listaHorarios.map(h => {
+                const [hh, mm] = h.split(':').map(Number);
+                let fechaSalida = new Date();
+                fechaSalida.setHours(hh, mm, 0);
+                
+                let fechaPaso = new Date(fechaSalida.getTime() + offset * 60000);
+                let diffMin = (fechaPaso - ahora) / 60000;
+
+                if (diffMin < -720) { 
+                    diffMin += 1440;
+                    fechaPaso = new Date(fechaPaso.getTime() + 86400000); 
+                } else if (diffMin > 720) {
+                    diffMin -= 1440;
+                }
+                return { salida: h, paso: fechaPaso.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), diffMin: diffMin };
+            }).filter(item => item.diffMin >= -5); 
+            
+            proximos.sort((a, b) => a.diffMin - b.diffMin);
+            if (proximos.length > 0) return proximos[0];
+            return { salida: '--:--', paso: '--:--' };
+        }
+
+        function mostrarGuia() {
+            const ubi = document.getElementById('ubicacion').value;
+            const idLinea = document.getElementById('linea').value;
+            if (!idLinea) return;
+
+            const guia = guias[ubi][idLinea];
+            const container = document.getElementById('guide-container');
+            
+            document.getElementById('guide-title').innerText = guia.nombre;
+
+            // Buscamos los tiempos hacia el Centro/Quaranta (C) y hacia el Barrio (B)
+            let busC = getNextBus(idLinea, 'centro', ubi);
+            if (busC.salida === '--:--') busC = getNextBus(idLinea, 'quaranta', ubi); // Para los 110
+            let busB = getNextBus(idLinea, 'barrio', ubi);
+
+            // Reemplazamos las etiquetas en el texto
+            let textoFinal = guia.text
+                .replace(/\[PASO_C\]/g, busC.paso)
+                .replace(/\[SALIDA_C\]/g, busC.salida)
+                .replace(/\[PASO_B\]/g, busB.paso)
+                .replace(/\[SALIDA_B\]/g, busB.salida);
+
+            document.getElementById('guide-text').innerHTML = textoFinal;
+            document.getElementById('guide-map').innerHTML = `<iframe src="http://googleusercontent.com/maps.google.com/${guia.map}" loading="lazy"></iframe>`;
+            
+            container.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
